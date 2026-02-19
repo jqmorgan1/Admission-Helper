@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase-client'
-import { Trophy, Medal, TrendingUp, Calendar, Target } from 'lucide-react'
+import { Trophy, Medal, TrendingUp } from 'lucide-react'
 
 interface LeaderboardEntry {
   id: string
@@ -13,38 +12,38 @@ interface LeaderboardEntry {
   task_completed_count: number
 }
 
+// Mock data for demo - in production, fetch from Supabase
+const mockData: LeaderboardEntry[] = [
+  { id: '1', display_name: 'Alex', graduation_year: 2026, accepted_count: 3, submitted_count: 8, task_completed_count: 45 },
+  { id: '2', display_name: 'Sarah', graduation_year: 2026, accepted_count: 2, submitted_count: 7, task_completed_count: 38 },
+  { id: '3', display_name: 'Michael', graduation_year: 2026, accepted_count: 2, submitted_count: 6, task_completed_count: 35 },
+  { id: '4', display_name: 'Emma', graduation_year: 2026, accepted_count: 1, submitted_count: 9, task_completed_count: 42 },
+  { id: '5', display_name: 'James', graduation_year: 2026, accepted_count: 1, submitted_count: 5, task_completed_count: 28 },
+  { id: '6', display_name: 'Olivia', graduation_year: 2026, accepted_count: 1, submitted_count: 4, task_completed_count: 25 },
+  { id: '7', display_name: 'William', graduation_year: 2026, accepted_count: 0, submitted_count: 6, task_completed_count: 32 },
+  { id: '8', display_name: 'Sophia', graduation_year: 2026, accepted_count: 0, submitted_count: 5, task_completed_count: 30 },
+]
+
 export default function LeaderboardPage() {
-  const supabase = createClient()
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [timeframe, setTimeframe] = useState<'week' | 'month' | 'all'>('all')
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-      // This is a mock - in production you'd aggregate real data
-      const mockData: LeaderboardEntry[] = [
-        { id: '1', display_name: 'Alex', graduation_year: 2026, accepted_count: 3, submitted_count: 8, task_completed_count: 45 },
-        { id: '2', display_name: 'Sarah', graduation_year: 2026, accepted_count: 2, submitted_count: 7, task_completed_count: 38 },
-        { id: '3', display_name: 'Michael', graduation_year: 2026, accepted_count: 2, submitted_count: 6, task_completed_count: 35 },
-        { id: '4', display_name: 'Emma', graduation_year: 2026, accepted_count: 1, submitted_count: 9, task_completed_count: 42 },
-        { id: '5', display_name: 'James', graduation_year: 2026, accepted_count: 1, submitted_count: 5, task_completed_count: 28 },
-        { id: '6', display_name: 'Olivia', graduation_year: 2026, accepted_count: 1, submitted_count: 4, task_completed_count: 25 },
-        { id: '7', display_name: 'William', graduation_year: 2026, accepted_count: 0, submitted_count: 6, task_completed_count: 32 },
-        { id: '8', display_name: 'Sophia', graduation_year: 2026, accepted_count: 0, submitted_count: 5, task_completed_count: 30 },
-      ].sort((a, b) => {
-        // Sort by accepted count first, then by total progress
+    // Simulate API call delay
+    const timer = setTimeout(() => {
+      const sorted = [...mockData].sort((a, b) => {
         if (b.accepted_count !== a.accepted_count) {
           return b.accepted_count - a.accepted_count
         }
         return b.submitted_count - a.submitted_count
       })
-
-      setEntries(mockData)
+      setEntries(sorted)
       setLoading(false)
-    }
+    }, 500)
 
-    fetchLeaderboard()
-  }, [supabase, timeframe])
+    return () => clearTimeout(timer)
+  }, [timeframe])
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -170,7 +169,6 @@ export default function LeaderboardPage() {
                     </div>
                   </div>
                 </div>
-              ))
             )}
           </div>
         </div>
