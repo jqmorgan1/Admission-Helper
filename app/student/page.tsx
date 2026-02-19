@@ -45,7 +45,6 @@ interface AdmissionResult {
 
 export default function StudentDashboard() {
   const router = useRouter()
-  const supabase = createClient()
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [tasks, setTasks] = useState<Task[]>([])
@@ -55,6 +54,7 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     const getUser = async () => {
+      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
@@ -105,7 +105,7 @@ export default function StudentDashboard() {
     }
 
     getUser()
-  }, [router, supabase])
+  }, [router])
 
   const pendingTasks = tasks.filter(t => t.status === 'pending').length
   const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length

@@ -36,7 +36,6 @@ interface SchoolProfile {
 
 export default function SchoolDashboard() {
   const router = useRouter()
-  const supabase = createClient()
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<SchoolProfile | null>(null)
   const [students, setStudents] = useState<StudentProfile[]>([])
@@ -46,6 +45,8 @@ export default function SchoolDashboard() {
 
   useEffect(() => {
     const getUser = async () => {
+      const supabase = createClient()
+      
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
@@ -77,7 +78,7 @@ export default function SchoolDashboard() {
     }
 
     getUser()
-  }, [router, supabase])
+  }, [router])
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -1,9 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase-client'
-import { Trophy, TrendingUp, Users, Filter } from 'lucide-react'
-import { getResultColor } from '@/lib/utils'
+import { Trophy } from 'lucide-react'
 
 interface AdmissionResult {
   id: string
@@ -15,40 +13,44 @@ interface AdmissionResult {
   created_at: string
 }
 
+// Mock data for demo
+const mockResults: AdmissionResult[] = [
+  { id: '1', school_name: 'Stanford University', school_type: 'top', result: 'accepted', major: 'Computer Science', anonymous_id: 'Student-a1b2c3d4', created_at: '2026-02-15' },
+  { id: '2', school_name: 'MIT', school_type: 'top', result: 'rejected', major: 'Engineering', anonymous_id: 'Student-e5f6g7h8', created_at: '2026-02-14' },
+  { id: '3', school_name: 'Harvard University', school_type: 'ivy', result: 'accepted', major: 'Economics', anonymous_id: 'Student-i9j0k1l2', created_at: '2026-02-13' },
+  { id: '4', school_name: 'Yale University', school_type: 'ivy', result: 'waitlisted', major: 'Political Science', anonymous_id: 'Student-m3n4o5p6', created_at: '2026-02-12' },
+  { id: '5', school_name: 'UC Berkeley', school_type: 'top', result: 'accepted', major: 'Data Science', anonymous_id: 'Student-q7r8s9t0', created_at: '2026-02-11' },
+  { id: '6', school_name: 'Princeton University', school_type: 'ivy', result: 'rejected', major: 'Physics', anonymous_id: 'Student-u1v2w3x4', created_at: '2026-02-10' },
+  { id: '7', school_name: 'Columbia University', school_type: 'ivy', result: 'accepted', major: 'Business', anonymous_id: 'Student-y5z6a7b8', created_at: '2026-02-09' },
+  { id: '8', school_name: 'UCLA', school_type: 'mid', result: 'accepted', major: 'Psychology', anonymous_id: 'Student-c9d0e1f2', created_at: '2026-02-08' },
+]
+
+function getResultColor(result: string) {
+  switch (result) {
+    case 'accepted': return 'bg-green-500'
+    case 'rejected': return 'bg-red-500'
+    case 'waitlisted': return 'bg-yellow-500'
+    default: return 'bg-gray-500'
+  }
+}
+
 export default function ResultsPage() {
-  const supabase = createClient()
   const [results, setResults] = useState<AdmissionResult[]>([])
   const [loading, setLoading] = useState(true)
   const [filterSchool, setFilterSchool] = useState('')
   const [filterResult, setFilterResult] = useState('')
-  const [stats, setStats] = useState({ accepted: 0, rejected: 0, waitlisted: 0 })
 
   useEffect(() => {
-    const fetchResults = async () => {
-      let query = supabase
-        .from('admission_results')
-        .select('*')
-        .order('created_at', { ascending: false })
-
+    const timer = setTimeout(() => {
+      let filtered = mockResults
       if (filterResult) {
-        query = query.eq('result', filterResult)
+        filtered = filtered.filter(r => r.result === filterResult)
       }
-
-      const { data, error } = await query
-
-      if (!error && data) {
-        setResults(data)
-        setStats({
-          accepted: data.filter(r => r.result === 'accepted').length,
-          rejected: data.filter(r => r.result === 'rejected').length,
-          waitlisted: data.filter(r => r.result === 'waitlisted').length,
-        })
-      }
+      setResults(filtered)
       setLoading(false)
-    }
-
-    fetchResults()
-  }, [supabase, filterResult])
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [filterResult])
 
   const filteredResults = results.filter(r => {
     if (filterSchool && !r.school_name.toLowerCase().includes(filterSchool.toLowerCase())) {
@@ -57,10 +59,15 @@ export default function ResultsPage() {
     return true
   })
 
+  const stats = {
+    accepted: mockResults.filter(r => r.result === 'accepted').length,
+    rejected: mockResults.filter(r => r.result === 'rejected').length,
+    waitlisted: mockResults.filter(r => r.result === 'waitlisted').length,
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             College Admission Results
@@ -85,7 +92,7 @@ export default function ResultsPage() {
             <p className="text-gray-600">Waitlisted</p>
           </div>
           <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-            <p className="text-4xl font-bold text-indigo-600">{results.length}</p>
+            <p className="text-4xl font-bold text-indigo-600">{mockResults.length}</p>
             <p className="text-gray-600">Total Results</p>
           </div>
         </div>
@@ -154,7 +161,6 @@ export default function ResultsPage() {
           </div>
         </div>
 
-        {/* Share CTA */}
         <div className="mt-8 bg-indigo-600 rounded-xl p-8 text-white text-center">
           <h3 className="text-2xl font-bold mb-4">Share Your Result</h3>
           <p className="text-indigo-100 mb-6 max-w-xl mx-auto">

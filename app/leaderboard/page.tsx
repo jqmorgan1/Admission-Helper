@@ -12,7 +12,6 @@ interface LeaderboardEntry {
   task_completed_count: number
 }
 
-// Mock data for demo - in production, fetch from Supabase
 const mockData: LeaderboardEntry[] = [
   { id: '1', display_name: 'Alex', graduation_year: 2026, accepted_count: 3, submitted_count: 8, task_completed_count: 45 },
   { id: '2', display_name: 'Sarah', graduation_year: 2026, accepted_count: 2, submitted_count: 7, task_completed_count: 38 },
@@ -30,7 +29,6 @@ export default function LeaderboardPage() {
   const [timeframe, setTimeframe] = useState<'week' | 'month' | 'all'>('all')
 
   useEffect(() => {
-    // Simulate API call delay
     const timer = setTimeout(() => {
       const sorted = [...mockData].sort((a, b) => {
         if (b.accepted_count !== a.accepted_count) {
@@ -41,32 +39,27 @@ export default function LeaderboardPage() {
       setEntries(sorted)
       setLoading(false)
     }, 500)
-
     return () => clearTimeout(timer)
   }, [timeframe])
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-6xl mx-auto px-4">
-        {/* Header */}
         <div className="text-center mb-12">
           <Trophy className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Competition Leaderboard</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            See how you stack up against other applicants. Push yourself to submit faster and complete more tasks!
+            See how you stack up against other applicants.
           </p>
         </div>
 
-        {/* Timeframe Filter */}
         <div className="flex justify-center gap-4 mb-8">
           {(['week', 'month', 'all'] as const).map((tf) => (
             <button
               key={tf}
               onClick={() => setTimeframe(tf)}
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                timeframe === tf
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                timeframe === tf ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
               {tf === 'week' ? 'This Week' : tf === 'month' ? 'This Month' : 'All Time'}
@@ -74,9 +67,9 @@ export default function LeaderboardPage() {
           ))}
         </div>
 
-        {/* Top 3 Podium */}
+        {/* Podium */}
         <div className="flex items-end justify-center gap-4 mb-12">
-          {entries.length >= 2 && (
+          {entries[1] && (
             <div className="text-center">
               <div className="bg-gray-200 rounded-xl p-6 w-32 h-40 flex flex-col items-center justify-end">
                 <div className="text-4xl mb-2">🥈</div>
@@ -98,7 +91,7 @@ export default function LeaderboardPage() {
             </div>
           )}
 
-          {entries.length >= 3 && (
+          {entries[2] && (
             <div className="text-center">
               <div className="bg-orange-100 rounded-xl p-6 w-32 h-32 flex flex-col items-center justify-end">
                 <div className="text-4xl mb-2">🥉</div>
@@ -110,7 +103,7 @@ export default function LeaderboardPage() {
           )}
         </div>
 
-        {/* Full Rankings */}
+        {/* Table */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="grid grid-cols-12 bg-gray-50 px-6 py-4 font-medium text-gray-600">
             <div className="col-span-1">Rank</div>
@@ -162,18 +155,16 @@ export default function LeaderboardPage() {
                       {entry.submitted_count}
                     </span>
                   </div>
-                  <div className="col-span-3 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-gray-400" />
-                      <span className="text-gray-900 font-medium">{entry.task_completed_count}</span>
-                    </div>
+                  <div className="col-span-3 text-center flex items-center justify-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-900 font-medium">{entry.task_completed_count}</span>
                   </div>
                 </div>
+              ))
             )}
           </div>
         </div>
 
-        {/* CTA */}
         <div className="mt-8 text-center">
           <p className="text-gray-600 mb-4">Want to see your name on the leaderboard?</p>
           <a
