@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const origin = searchParams.get('origin') || '/'
 
-  const supabase = createClient()
+  const supabase = await createClient()
   
   await supabase.auth.signOut()
 

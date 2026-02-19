@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { GraduationCap, School, User } from "lucide-react";
+import { GraduationCap, School, User, Trophy } from "lucide-react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +39,10 @@ export default function RootLayout({
                 </Link>
               </div>
               <div className="flex items-center space-x-4">
+                <Link href="/leaderboard" className="flex items-center space-x-1 text-gray-600 hover:text-gray-900">
+                  <Trophy className="h-5 w-5" />
+                  <span>Leaderboard</span>
+                </Link>
                 <Link href="/student" className="flex items-center space-x-1 text-gray-600 hover:text-gray-900">
                   <User className="h-5 w-5" />
                   <span>Student</span>
